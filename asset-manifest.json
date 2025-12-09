@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/tbrea40/static/css/main.8a903dbc.css",
+    "main.js": "/tbrea40/static/js/main.f53a91d7.js",
+    "static/js/572.655588aa.chunk.js": "/tbrea40/static/js/572.655588aa.chunk.js",
+    "index.html": "/tbrea40/index.html",
+    "main.8a903dbc.css.map": "/tbrea40/static/css/main.8a903dbc.css.map",
+    "main.f53a91d7.js.map": "/tbrea40/static/js/main.f53a91d7.js.map",
+    "572.655588aa.chunk.js.map": "/tbrea40/static/js/572.655588aa.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8a903dbc.css",
+    "static/js/main.f53a91d7.js"
+  ]
+}
