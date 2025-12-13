@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tbreakapp Icon - 512x512</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .icon-container {
+            width: 512px;
+            height: 512px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff5e78 50%, #8e44ad 100%);
+            border-radius: 115px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .icon-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-20px, -20px); }
+        }
+        .number {
+            font-size: 180px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            line-height: 1;
+            z-index: 1;
+        }
+        .text {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-top: -10px;
+            z-index: 1;
+            letter-spacing: 2px;
+        }
+        .subtitle {
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-top: 5px;
+            z-index: 1;
+            letter-spacing: 1px;
+        }
+        .instructions {
+            margin-top: 30px;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 512px;
+        }
+        .instructions h3 {
+            color: #ff6b35;
+            margin-top: 0;
+        }
+        .instructions ol {
+            text-align: left;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="icon-container">
+            <div class="number">40</div>
+            <div class="text">T-BREAK</div>
+            <div class="subtitle">WELLNESS</div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📸 Screenshot Instructions</h3>
+            <ol>
+                <li>Press <strong>F12</strong> to open DevTools</li>
+                <li>Press <strong>Ctrl+Shift+M</strong> (or Cmd+Shift+M on Mac) for device view</li>
+                <li>Set dimensions to <strong>512px × 512px</strong></li>
+                <li>Right-click on the icon → <strong>"Capture screenshot"</strong></li>
+                <li>Save as <strong>app-icon-512.png</strong></li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,486 @@
+/* styles/layout.css - Global layout and component styles with joyful design */
+
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   TEXT STYLES
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  background: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  animation: slideInDown 0.6s ease-out;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: var(--joy-purple);
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+  color: var(--joy-teal);
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+  color: var(--gray-dark);
+}
+
+a {
+  color: var(--joy-teal);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  font-weight: 600;
+  position: relative;
+}
+
+a:hover {
+  color: var(--joy-orange);
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Primary Button */
+button:not([type="checkbox"]):not(.emoji-btn) {
+  background: var(--gradient-sunset);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+button:not([type="checkbox"]):not(.emoji-btn):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+button:not([type="checkbox"]):not(.emoji-btn):active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Special button styles */
+button.emoji-btn {
+  background: white;
+  border: 2px solid var(--gray-light);
+  font-size: 2rem;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+}
+
+button.emoji-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--joy-teal);
+  box-shadow: var(--glow-teal);
+}
+
+button.emoji-btn.active {
+  background: var(--gradient-warm);
+  border-color: var(--joy-pink);
+  box-shadow: var(--glow-pink);
+}
+
+/* ============================================
+   CARDS & CONTAINERS
+   ============================================ */
+
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  border-left: 4px solid var(--joy-teal);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-gradient {
+  background: var(--gradient-ocean);
+  color: white;
+  border-left: none;
+}
+
+.card-gradient h3 {
+  color: white;
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  padding: 12px;
+  border: 2px solid var(--gray-light);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all var(--transition-normal);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--joy-teal);
+  box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.1);
+  background-color: rgba(26, 188, 156, 0.02);
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--joy-purple);
+  width: 20px;
+  height: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--gray-dark);
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 20px;
+  background: white;
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--joy-teal);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  color: var(--joy-purple);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+nav a:hover {
+  transform: translateX(8px);
+  border-left-color: var(--joy-orange);
+  box-shadow: var(--shadow-md);
+  color: var(--joy-orange);
+}
+
+/* ============================================
+   CONTAINERS & LAYOUT
+   ============================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-container {
+  padding: 20px;
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.section {
+  margin: 2rem 0;
+  padding: 20px;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   GRID & FLEX
+   ============================================ */
+
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rainbow-shift {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mt-40 {
+  margin-top: 40px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.gap-20 {
+  gap: 20px;
+}
+
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .page-container {
+    padding: 15px;
+  }
+
+  nav {
+    flex-direction: column;
+  }
+
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   DARK MODE (Optional)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #ecf0f1;
+  }
+
+  .card {
+    background: #2d2d2d;
+    color: #ecf0f1;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    background: #3d3d3d;
+    color: #ecf0f1;
+    border-color: #444;
+  }
+
+  nav a {
+    background: #2d2d2d;
+    color: var(--joy-cyan);
+  }
+}

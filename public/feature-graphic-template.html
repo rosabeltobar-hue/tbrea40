@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tbreakapp Feature Graphic - 1024x500</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .graphic-container {
+            width: 1024px;
+            height: 500px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff5e78 30%, #8e44ad 70%, #1abc9c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .graphic-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: shimmer 4s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+        .left-content {
+            z-index: 1;
+            max-width: 600px;
+        }
+        .app-name {
+            font-size: 120px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            line-height: 0.9;
+            margin-bottom: 15px;
+        }
+        .tagline {
+            font-size: 38px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 28px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .right-content {
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .badge {
+            background: white;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .badge-number {
+            font-size: 100px;
+            font-weight: 900;
+            color: #ff6b35;
+            line-height: 1;
+        }
+        .badge-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #8e44ad;
+            margin-top: -5px;
+        }
+        .instructions {
+            margin-top: 30px;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 1024px;
+        }
+        .instructions h3 {
+            color: #ff6b35;
+            margin-top: 0;
+        }
+        .instructions ol {
+            text-align: left;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="graphic-container">
+        <div class="left-content">
+            <div class="app-name">tbreakapp</div>
+            <div class="tagline">Track Your 40-Day Journey</div>
+            <div class="subtitle">✨ Wellness • Community • Progress ✨</div>
+        </div>
+        <div class="right-content">
+            <div class="badge">
+                <div class="badge-number">40</div>
+                <div class="badge-text">DAYS</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>📸 Screenshot Instructions</h3>
+        <ol>
+            <li>Press <strong>F12</strong> to open DevTools</li>
+            <li>Press <strong>Ctrl+Shift+M</strong> (or Cmd+Shift+M on Mac) for device view</li>
+            <li>Set dimensions to <strong>1024px × 500px</strong></li>
+            <li>Right-click on the banner → <strong>"Capture screenshot"</strong></li>
+            <li>Save as <strong>feature-graphic-1024x500.png</strong></li>
+        </ol>
+    </div>
+</body>
+</html>

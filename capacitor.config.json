@@ -1,0 +1,6 @@
+{
+  "appId": "com.tbreak.app",
+  "appName": "T-Break",
+  "webDir": "build",
+  "bundledWebRuntime": false
+}

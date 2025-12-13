@@ -1,0 +1,11 @@
+# gradle.properties template for signing configuration
+# Copy this to ~/.gradle/gradle.properties (user level) or android/gradle.properties (project level)
+# and fill in your actual passwords
+
+# App signing keystore credentials
+# DO NOT commit this file to git if you use project-level gradle.properties
+TBREAK_KEYSTORE_PASSWORD=your_store_password
+TBREAK_KEY_PASSWORD=your_key_password
+
+# Optional: Increase heap size if builds fail with OutOfMemory
+# org.gradle.jvmargs=-Xmx4096m
