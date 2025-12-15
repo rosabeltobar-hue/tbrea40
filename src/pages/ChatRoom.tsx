@@ -325,45 +325,51 @@ export default function ChatRoom() {
           </div>
         )}
 
-        {/* Messages Container */}
+        {/* IRC-Style Messages Container */}
         {!loading && (
           <div style={{
-            background: "white",
-            border: "2px solid var(--joy-teal)",
-            borderRadius: "var(--radius-lg)",
-            height: 400,
+            background: "#36393f",
+            border: "none",
+            borderRadius: 0,
+            height: 500,
             overflowY: "auto",
             padding: 16,
-            marginBottom: 20,
-            boxShadow: "var(--shadow-md)",
-            animation: "slideInUp 0.65s ease-out"
+            marginBottom: 0,
+            boxShadow: "inset 0 2px 10px rgba(0,0,0,0.3)",
+            animation: "slideInUp 0.65s ease-out",
+            fontFamily: "'Courier New', monospace"
           }}>
             {messages.length === 0 ? (
               <div style={{
                 textAlign: "center",
-                color: "var(--gray-medium)",
+                color: "#72767d",
                 padding: "40px 20px",
-                fontSize: "1rem"
+                fontSize: "0.95rem"
               }}>
-                <p style={{ fontSize: "2.5rem", margin: "0 0 10px 0" }}>🌟</p>
-                <p>No messages yet. Be the first to share your support!</p>
+                <p style={{ fontSize: "2rem", margin: "0 0 10px 0" }}>💬</p>
+                <p style={{ fontStyle: "italic" }}>Welcome to #t-break-community</p>
+                <p style={{ fontSize: "0.85rem", marginTop: 8 }}>No messages yet. Start the conversation!</p>
               </div>
             ) : (
               messages.map((m, idx) => {
                 const messageAvatar = avatarOptions.find(a => a.id === m.chatAvatar);
+                const isOwnMessage = user?.uid === m.userId;
+                const messageTime = new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 return (
                   <div
                     key={m.id}
                     style={{
                       display: "flex",
                       alignItems: "flex-start",
-                      marginBottom: 16,
-                      padding: 12,
-                      background: idx % 2 === 0 ? "linear-gradient(135deg, rgba(26, 188, 156, 0.1) 0%, rgba(142, 68, 173, 0.05) 100%)" : "white",
-                      borderRadius: "var(--radius-md)",
-                      animation: "slideInUp 0.3s ease-out",
-                      borderLeft: "4px solid var(--joy-teal)"
+                      marginBottom: 12,
+                      padding: "8px 12px",
+                      background: isOwnMessage ? "rgba(114, 137, 218, 0.1)" : "transparent",
+                      borderRadius: 4,
+                      transition: "background 0.15s ease",
+                      borderLeft: isOwnMessage ? "3px solid #7289da" : "3px solid transparent"
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = isOwnMessage ? "rgba(114, 137, 218, 0.15)" : "rgba(255,255,255,0.03)"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = isOwnMessage ? "rgba(114, 137, 218, 0.1)" : "transparent"}
                   >
                     <div style={{ 
                       flexShrink: 0, 
@@ -374,58 +380,63 @@ export default function ChatRoom() {
                           src={m.chatAvatarCustom}
                           alt="avatar"
                           style={{
-                            width: 50,
-                            height: 50,
+                            width: 40,
+                            height: 40,
                             borderRadius: "50%",
                             objectFit: "cover",
-                            border: `3px solid ${getStreakColor(m.streakDays)}`,
-                            boxShadow: `0 0 12px ${getStreakColor(m.streakDays)}80`
+                            border: `2px solid ${getStreakColor(m.streakDays)}`
                           }}
                         />
                       ) : (
                         <div style={{ 
-                          fontSize: "2.5rem",
-                          width: 50,
-                          height: 50,
+                          fontSize: "2rem",
+                          width: 40,
+                          height: 40,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           borderRadius: "50%",
-                          border: `3px solid ${getStreakColor(m.streakDays)}`,
-                          boxShadow: `0 0 12px ${getStreakColor(m.streakDays)}80`
+                          border: `2px solid ${getStreakColor(m.streakDays)}`,
+                          background: "#40444b"
                         }}>
                           {messageAvatar?.display || "😊"}
                         </div>
                       )}
                     </div>
                     <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
+                        <span style={{
+                          fontSize: "0.95rem",
+                          color: getStreakColor(m.streakDays),
+                          fontWeight: 700
+                        }}>
+                          {m.chatDisplayName}
+                        </span>
+                        <span style={{
+                          fontSize: "0.7rem",
+                          color: "#72767d"
+                        }}>
+                          {messageTime}
+                        </span>
+                        {m.streakDays >= 7 && (
+                          <span style={{
+                            fontSize: "0.7rem",
+                            background: getStreakColor(m.streakDays),
+                            color: "white",
+                            padding: "2px 6px",
+                            borderRadius: 8,
+                            fontWeight: 600
+                          }}>
+                            {getStreakTier(m.streakDays)}
+                          </span>
+                        )}
+                      </div>
                       <div style={{
                         fontSize: "0.95rem",
-                        color: "var(--joy-purple)",
-                        fontWeight: 700,
-                        marginBottom: 4
-                      }}>
-                        {m.chatDisplayName}
-                      </div>
-                      <div style={{
-                        fontSize: "0.75rem",
-                        background: `linear-gradient(135deg, ${getStreakColor(m.streakDays)}, ${getStreakColor(m.streakDays)}dd)`,
-                        color: "white",
-                        fontWeight: 600,
-                        marginBottom: 6,
-                        display: "inline-block",
-                        padding: "4px 10px",
-                        borderRadius: 12,
-                        boxShadow: `0 2px 6px ${getStreakColor(m.streakDays)}60`,
-                        textShadow: "0 1px 2px rgba(0,0,0,0.3)"
-                      }}>
-                        {getStreakTier(m.streakDays)} · {m.streakDays} days
-                      </div>
-                      <div style={{
-                        fontSize: "1rem",
-                        lineHeight: 1.5,
-                        color: "var(--gray-dark)",
-                        wordWrap: "break-word"
+                        lineHeight: 1.4,
+                        color: "#dcddde",
+                        wordWrap: "break-word",
+                        whiteSpace: "pre-wrap"
                       }}>
                         {m.message}
                       </div>
@@ -437,48 +448,63 @@ export default function ChatRoom() {
           </div>
         )}
 
-        {/* Input Area */}
+        {/* IRC-Style Input Area */}
         {user && chatProfile && !loading && (
           <div style={{
+            background: "#40444b",
+            padding: "16px 20px",
+            borderRadius: "0 0 12px 12px",
             display: "flex",
             gap: 12,
-            animation: "slideInUp 0.7s ease-out"
+            animation: "slideInUp 0.7s ease-out",
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.2)"
           }}>
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="💭 Write a supportive message..."
+              placeholder="Message #t-break-community"
               disabled={sending}
               style={{
                 flex: 1,
-                padding: 14,
-                border: "2px solid var(--joy-teal)",
-                borderRadius: "var(--radius-lg)",
-                fontSize: "1rem",
+                padding: "12px 16px",
+                border: "none",
+                borderRadius: 8,
+                fontSize: "0.95rem",
                 fontFamily: "inherit",
-                transition: "all var(--transition-normal)",
-                background: sending ? "var(--gray-light)" : "white",
+                transition: "all 0.2s ease",
+                background: "#2c2f33",
+                color: "#dcddde",
+                outline: "none"
               }}
             />
             <button
               onClick={handleSend}
               disabled={sending || !text.trim()}
               style={{
-                padding: "14px 28px",
-                background: sending || !text.trim() ? "var(--gray-medium)" : "var(--gradient-sunset)",
+                padding: "12px 24px",
+                background: sending || !text.trim() ? "#4f545c" : "#7289da",
                 color: "white",
                 border: "none",
-                borderRadius: "var(--radius-lg)",
-                fontSize: "1rem",
+                borderRadius: 8,
+                fontSize: "0.95rem",
                 fontWeight: 700,
                 cursor: sending || !text.trim() ? "not-allowed" : "pointer",
-                transition: "all var(--transition-normal)",
-                whiteSpace: "nowrap",
-                boxShadow: "var(--shadow-md)"
+                transition: "all 0.2s ease",
+                whiteSpace: "nowrap"
+              }}
+              onMouseEnter={(e) => {
+                if (!sending && text.trim()) {
+                  e.currentTarget.style.background = "#5b6eae";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!sending && text.trim()) {
+                  e.currentTarget.style.background = "#7289da";
+                }
               }}
             >
-              {sending ? "📤 Sending..." : "✨ Send"}
+              {sending ? "⏳" : "Send"}
             </button>
           </div>
         )}
