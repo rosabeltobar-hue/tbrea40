@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import { getUser, createUser } from "../services/user";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -40,7 +42,11 @@ export default function Profile() {
     try {
       const iso = startDate ? new Date(startDate).toISOString() : null;
       await createUser(user.uid, { startDate: iso || undefined });
-      setMessage("Saved.");
+      setMessage("Saved! Redirecting to dashboard...");
+      // Redirect to dashboard after 1 second
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (err) {
       console.error(err);
       setMessage("Failed to save start date.");
@@ -74,7 +80,22 @@ export default function Profile() {
         <button onClick={handleSave} disabled={loading}>
           {loading ? "Saving..." : "Save Start Date"}
         </button>
-        {message && <span style={{ marginLeft: 12 }}>{message}</span>}
+        {message && <span style={{ marginLeft: 12, color: message.includes("Failed") ? "red" : "var(--joy-green)" }}>{message}</span>}
+      </div>
+
+      <div style={{ marginTop: 30, paddingTop: 20, borderTop: "1px solid var(--gray-light)" }}>
+        <Link to="/" style={{
+          display: "inline-block",
+          padding: "12px 24px",
+          background: "var(--gradient-ocean)",
+          color: "white",
+          textDecoration: "none",
+          borderRadius: 8,
+          fontWeight: 600,
+          transition: "transform 0.2s",
+        }}>
+          ← Back to Dashboard
+        </Link>
       </div>
     </div>
   );
