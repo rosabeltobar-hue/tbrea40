@@ -21,6 +21,11 @@ export interface User {
   // Optional T-break start date in ISO format (e.g. "2025-12-07T00:00:00.000Z")
   startDate?: string;
   recommendedBreakDays?: number; // Calculated based on usage pattern
+  
+  // Nightly check-in tracking
+  lastNightlyCheckIn?: string;
+  lastNightlyMood?: string;
+  lastNightlyNotes?: string;
 
   // Gamification
   currentDay: number;
