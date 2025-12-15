@@ -1,5 +1,5 @@
 // src/components/ChatPolicyModal.tsx
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ChatPolicyModalProps {
   onAccept: () => void;
@@ -8,12 +8,24 @@ interface ChatPolicyModalProps {
 
 export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModalProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Auto-enable if content fits without scrolling
+  useEffect(() => {
+    if (contentRef.current) {
+      const element = contentRef.current;
+      // Check if content is already fully visible (no scroll needed)
+      if (element.scrollHeight <= element.clientHeight) {
+        setHasScrolled(true);
+      }
+    }
+  }, []);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const element = e.currentTarget;
     const scrollPercentage = (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100;
     // Enable button at 80% scroll or if content is already fully visible
-    if ((scrollPercentage >= 80 || element.scrollHeight <= element.clientHeight) && !hasScrolled) {
+    if (scrollPercentage >= 80 && !hasScrolled) {
       setHasScrolled(true);
     }
   };
@@ -62,6 +74,7 @@ export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModal
 
         {/* Content */}
         <div 
+          ref={contentRef}
           onScroll={handleScroll}
           style={{
             flex: 1,
