@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { useState, useEffect } from "react";
 import { getUser } from "../services/user";
-import { getDailyQuote, calculateMetaboliteClearance, relaxationTechniques, nutritionTips } from "../utils/wellness";
+import { getDailyQuote, calculateMetaboliteClearance, relaxationTechniques, wellnessCategories } from "../utils/wellness";
 import { NightlyCheckIn } from "../components/NightlyCheckIn";
 import { createUser } from "../services/user";
 
@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [daysClean, setDaysClean] = useState(0);
   const [dailyQuote, setDailyQuote] = useState("");
   const [metaboliteData, setMetaboliteData] = useState<any>(null);
+  const [selectedWellnessCategory, setSelectedWellnessCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -307,30 +308,182 @@ export default function Dashboard() {
                 marginTop: 0,
                 marginBottom: 15
               }}>
-                🥗 Nutrition for Recovery
+                🌟 Wellness Resources & Support
               </h3>
               
-              {nutritionTips.slice(0, 2).map((category) => (
-                <div key={category.category} style={{ marginBottom: 20 }}>
-                  <h4 style={{ color: "var(--joy-green)", marginBottom: 10 }}>
-                    {category.category}
+              <p style={{ color: "var(--gray-dark)", marginBottom: 20 }}>
+                Click a category to explore resources that help with detox, anxiety, sleep, and more!
+              </p>
+
+              {/* Category Cards Grid */}
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", 
+                gap: 15,
+                marginBottom: 20
+              }}>
+                {wellnessCategories.map((category) => (
+                  <div
+                    key={category.id}
+                    onClick={() => setSelectedWellnessCategory(
+                      selectedWellnessCategory === category.id ? null : category.id
+                    )}
+                    style={{
+                      padding: 20,
+                      background: selectedWellnessCategory === category.id 
+                        ? category.lightColor 
+                        : "var(--gray-lightest)",
+                      borderRadius: 12,
+                      textAlign: "center",
+                      cursor: "pointer",
+                      border: selectedWellnessCategory === category.id 
+                        ? `3px solid ${category.color}` 
+                        : "3px solid transparent",
+                      transition: "all 0.3s ease",
+                      transform: selectedWellnessCategory === category.id ? "scale(1.05)" : "scale(1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "scale(1.05)";
+                      e.currentTarget.style.boxShadow = "var(--shadow-lg)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = selectedWellnessCategory === category.id ? "scale(1.05)" : "scale(1)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    <div style={{ fontSize: "3rem", marginBottom: 8 }}>
+                      {category.icon}
+                    </div>
+                    <div style={{ 
+                      fontSize: "0.9rem", 
+                      fontWeight: 600,
+                      color: category.color
+                    }}>
+                      {category.title}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Selected Category Resources */}
+              {selectedWellnessCategory && (
+                <div style={{
+                  background: wellnessCategories.find(c => c.id === selectedWellnessCategory)?.lightColor,
+                  padding: 20,
+                  borderRadius: 12,
+                  border: `2px solid ${wellnessCategories.find(c => c.id === selectedWellnessCategory)?.color}`,
+                  animation: "slideInUp 0.4s ease-out"
+                }}>
+                  <h4 style={{ 
+                    color: wellnessCategories.find(c => c.id === selectedWellnessCategory)?.color,
+                    marginTop: 0,
+                    marginBottom: 15,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10
+                  }}>
+                    <span style={{ fontSize: "1.5rem" }}>
+                      {wellnessCategories.find(c => c.id === selectedWellnessCategory)?.icon}
+                    </span>
+                    {wellnessCategories.find(c => c.id === selectedWellnessCategory)?.title}
                   </h4>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                    {category.tips.map((tip, i) => (
-                      <li key={i} style={{ 
-                        padding: "8px 12px",
-                        background: "var(--gray-lightest)",
-                        marginBottom: 8,
-                        borderRadius: 6,
-                        fontSize: "0.9rem",
-                        color: "var(--gray-dark)"
-                      }}>
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
+
+                  <div style={{ display: "grid", gap: 12 }}>
+                    {wellnessCategories
+                      .find(c => c.id === selectedWellnessCategory)
+                      ?.resources.map((resource, idx) => (
+                        <div key={idx} style={{
+                          padding: 15,
+                          background: "white",
+                          borderRadius: 8,
+                          boxShadow: "var(--shadow-sm)"
+                        }}>
+                          <div style={{ 
+                            display: "flex", 
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            marginBottom: 8
+                          }}>
+                            <strong style={{ 
+                              color: wellnessCategories.find(c => c.id === selectedWellnessCategory)?.color,
+                              fontSize: "1.05rem"
+                            }}>
+                              {resource.name}
+                            </strong>
+                            {(resource as any).frequency && (
+                              <span style={{
+                                fontSize: "0.75rem",
+                                background: wellnessCategories.find(c => c.id === selectedWellnessCategory)?.lightColor,
+                                padding: "4px 8px",
+                                borderRadius: 4,
+                                color: wellnessCategories.find(c => c.id === selectedWellnessCategory)?.color,
+                                fontWeight: 600
+                              }}>
+                                {(resource as any).frequency}
+                              </span>
+                            )}
+                          </div>
+                          
+                          <div style={{ 
+                            fontSize: "0.9rem",
+                            color: "var(--joy-teal)",
+                            fontWeight: 600,
+                            marginBottom: 6
+                          }}>
+                            ✓ {resource.benefits}
+                          </div>
+                          
+                          <p style={{ 
+                            margin: 0,
+                            fontSize: "0.85rem",
+                            color: "var(--gray-dark)",
+                            lineHeight: 1.5
+                          }}>
+                            {resource.description}
+                          </p>
+                          
+                          <div style={{ 
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 6,
+                            marginTop: 8
+                          }}>
+                            {resource.helps.map((symptom: string) => (
+                              <span key={symptom} style={{
+                                fontSize: "0.7rem",
+                                background: "var(--gray-lightest)",
+                                padding: "3px 8px",
+                                borderRadius: 12,
+                                color: "var(--gray-medium)",
+                                textTransform: "uppercase",
+                                fontWeight: 600
+                              }}>
+                                {symptom}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedWellnessCategory(null)}
+                    style={{
+                      marginTop: 15,
+                      padding: "10px 20px",
+                      background: wellnessCategories.find(c => c.id === selectedWellnessCategory)?.color,
+                      color: "white",
+                      border: "none",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      width: "100%"
+                    }}
+                  >
+                    ← Back to Categories
+                  </button>
                 </div>
-              ))}
+              )}
             </div>
 
             {/* Action CTA */}
