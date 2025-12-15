@@ -3,15 +3,17 @@ import { useState } from "react";
 
 interface ChatPolicyModalProps {
   onAccept: () => void;
+  onDecline: () => void;
 }
 
-export default function ChatPolicyModal({ onAccept }: ChatPolicyModalProps) {
+export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModalProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const element = e.currentTarget;
-    const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 50;
-    if (isAtBottom && !hasScrolled) {
+    const scrollPercentage = (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100;
+    // Enable button at 80% scroll or if content is already fully visible
+    if ((scrollPercentage >= 80 || element.scrollHeight <= element.clientHeight) && !hasScrolled) {
       setHasScrolled(true);
     }
   };
@@ -115,17 +117,16 @@ export default function ChatPolicyModal({ onAccept }: ChatPolicyModalProps) {
             </p>
           </div>
 
-          {!hasScrolled && (
-            <div style={{
-              textAlign: "center",
-              marginTop: 20,
-              color: "var(--gray-medium)",
-              fontSize: "0.85rem",
-              fontStyle: "italic"
-            }}>
-              📜 Scroll down to continue
-            </div>
-          )}
+          <div style={{
+            textAlign: "center",
+            marginTop: 20,
+            color: hasScrolled ? "#4CAF50" : "var(--gray-medium)",
+            fontSize: "0.85rem",
+            fontWeight: hasScrolled ? 600 : 400,
+            fontStyle: hasScrolled ? "normal" : "italic"
+          }}>
+            {hasScrolled ? "✅ Ready to accept!" : "📜 Scroll down to continue"}
+          </div>
         </div>
 
         {/* Footer */}
@@ -133,9 +134,33 @@ export default function ChatPolicyModal({ onAccept }: ChatPolicyModalProps) {
           padding: 20,
           borderTop: "2px solid #f0f0f0",
           display: "flex",
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
           gap: 12
         }}>
+          <button
+            onClick={onDecline}
+            style={{
+              padding: "14px 24px",
+              background: "white",
+              color: "#666",
+              border: "2px solid #e0e0e0",
+              borderRadius: 25,
+              fontSize: "1rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#999";
+              e.currentTarget.style.color = "#333";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#e0e0e0";
+              e.currentTarget.style.color = "#666";
+            }}
+          >
+            ← Go Back
+          </button>
           <button
             onClick={onAccept}
             disabled={!hasScrolled}

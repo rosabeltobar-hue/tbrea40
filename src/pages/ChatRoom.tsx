@@ -154,7 +154,10 @@ export default function ChatRoom() {
     }}>
       {/* Chat Policy Modal (First Time Only) */}
       {showPolicyModal && user && (
-        <ChatPolicyModal onAccept={handleAcceptPolicy} />
+        <ChatPolicyModal 
+          onAccept={handleAcceptPolicy}
+          onDecline={() => navigate("/dashboard")}
+        />
       )}
 
       {/* Chat Profile Setup Modal */}
