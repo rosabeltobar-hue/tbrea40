@@ -4,7 +4,10 @@ import { useUser } from "../context/UserContext";
 import { useState, useEffect } from "react";
 import { getUser } from "../services/user";
 import { getDailyQuote, calculateMetaboliteClearance, relaxationTechniques, wellnessCategories } from "../utils/wellness";
+import { getWithdrawalTimeline, getSymptomsForDay, getDifficultyColor, getDifficultyLabel } from "../utils/symptoms";
 import { NightlyCheckIn } from "../components/NightlyCheckIn";
+import SymptomTracker from "../components/SymptomTracker";
+import WithdrawalTimeline from "../components/WithdrawalTimeline";
 import { createUser } from "../services/user";
 
 export default function Dashboard() {
@@ -15,6 +18,7 @@ export default function Dashboard() {
   const [dailyQuote, setDailyQuote] = useState("");
   const [metaboliteData, setMetaboliteData] = useState<any>(null);
   const [selectedWellnessCategory, setSelectedWellnessCategory] = useState<string | null>(null);
+  const [showSymptomTracker, setShowSymptomTracker] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -505,7 +509,23 @@ export default function Dashboard() {
             </div>
           </>
         )}
+        {/* Withdrawal Timeline */}
+        {userData && userData.frequency && daysClean > 0 && (
+          <WithdrawalTimeline
+            frequency={userData.frequency}
+            yearsOfUse={userData.yearsOfUse}
+            currentDay={daysClean}
+          />
+        )}
 
+        {/* Symptom Tracker */}
+        {userData && daysClean > 0 && user && (
+          <SymptomTracker
+            userId={user.uid}
+            currentDay={daysClean}
+            onSave={() => console.log("Symptoms saved")}
+          />
+        )}
         {/* Navigation Cards */}
         <div style={{
           display: "grid",

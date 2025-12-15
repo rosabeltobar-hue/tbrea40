@@ -44,6 +44,9 @@ export interface User {
   chatAvatarCustom?: string; // Custom uploaded image URL
   chatPolicyAccepted?: boolean; // User accepted chat policy (one-time)
   
+  // Symptom tracking
+  symptomReports?: SymptomReport[];
+  
   // Optional notification preferences stored on the user document
   notifications?: NotificationPreferences;
   // FCM token for sending push notifications to this device
@@ -124,6 +127,20 @@ export interface EvaResponse {
   createdAt: number;
 }
 
+// ================= SYMPTOM TRACKING ==================
+export interface SymptomReport {
+  day: number; // Day number in their break (1, 2, 3, etc.)
+  symptoms: string[]; // Array of symptom IDs
+  severity?: "mild" | "moderate" | "severe";
+  notes?: string;
+  timestamp: number;
+}
+
+export interface AggregatedSymptoms {
+  day: number;
+  symptomCounts: { [symptomId: string]: number };
+  totalReports: number;
+}
 
 // ================= PURCHASE ==================
 
