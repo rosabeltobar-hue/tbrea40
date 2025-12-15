@@ -6,12 +6,45 @@ import {
   serverTimestamp,
   query,
   orderBy,
-  onSnapshot
+  onSnapshot,
+  getDocs,
+  deleteDoc,
+  doc,
+  limit
 } from "firebase/firestore";
 import { ChatMessage } from "../types";
 import { queueOfflineChange, checkNetworkStatus } from "./offline";
 
 const COLLECTION = "chatMessages";
+const MAX_MESSAGES = 300;
+
+// Clean up old messages if over limit
+export const cleanupOldMessages = async () => {
+  try {
+    const q = query(
+      collection(db, COLLECTION),
+      orderBy("createdAt", "desc")
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    if (snapshot.size > MAX_MESSAGES) {
+      const messagesToDelete = snapshot.size - MAX_MESSAGES;
+      const oldestMessages = snapshot.docs.slice(-messagesToDelete);
+      
+      console.log(`Cleaning up ${messagesToDelete} old messages...`);
+      
+      const deletePromises = oldestMessages.map(messageDoc => 
+        deleteDoc(doc(db, COLLECTION, messageDoc.id))
+      );
+      
+      await Promise.all(deletePromises);
+      console.log(`✅ Cleaned up ${messagesToDelete} old messages`);
+    }
+  } catch (error) {
+    console.error("Error cleaning up old messages:", error);
+  }
+};
 
 export const sendChatMessage = async (
   userId: string,
@@ -41,6 +74,11 @@ export const sendChatMessage = async (
 
   try {
     await addDoc(collection(db, COLLECTION), data);
+    
+    // Cleanup old messages if over limit (fire and forget)
+    cleanupOldMessages().catch(err => 
+      console.warn("Cleanup failed:", err)
+    );
   } catch (error) {
     // If offline, queue the message for sending later
     if (!checkNetworkStatus()) {

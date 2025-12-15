@@ -35,6 +35,7 @@ export default function ChatRoom() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
+  const [wordCount, setWordCount] = useState(0);
   const [sending, setSending] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [showPolicyModal, setShowPolicyModal] = useState(false);
@@ -80,6 +81,12 @@ export default function ChatRoom() {
     })();
   }, [user]);
 
+  // Update word count when text changes
+  useEffect(() => {
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    setWordCount(words.length);
+  }, [text]);
+
   const handleProfileComplete = async (displayName: string, avatar: string, customAvatarUrl?: string) => {
     if (!user) return;
     
@@ -117,8 +124,13 @@ export default function ChatRoom() {
   };
 
   const handleSend = async () => {
-    if (!user || !text.trim() || !chatProfile) return;
-
+    if (!user || !text.trim() || !chatProfile) return;    
+    // Check word limit
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    if (words.length > 30) {
+      alert("⚠️ Message too long! Please keep it under 30 words to maintain chat flow.");
+      return;
+    }
     setSending(true);
     try {
       const userData = await getUser(user.uid);
@@ -454,58 +466,66 @@ export default function ChatRoom() {
             background: "#40444b",
             padding: "16px 20px",
             borderRadius: "0 0 12px 12px",
-            display: "flex",
-            gap: 12,
-            animation: "slideInUp 0.7s ease-out",
             boxShadow: "0 -2px 10px rgba(0,0,0,0.2)"
           }}>
-            <input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="Message #t-break-community"
-              disabled={sending}
-              style={{
-                flex: 1,
-                padding: "12px 16px",
-                border: "none",
-                borderRadius: 8,
-                fontSize: "0.95rem",
-                fontFamily: "inherit",
-                transition: "all 0.2s ease",
-                background: "#2c2f33",
-                color: "#dcddde",
-                outline: "none"
-              }}
-            />
-            <button
-              onClick={handleSend}
-              disabled={sending || !text.trim()}
-              style={{
-                padding: "12px 24px",
-                background: sending || !text.trim() ? "#4f545c" : "#7289da",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                cursor: sending || !text.trim() ? "not-allowed" : "pointer",
-                transition: "all 0.2s ease",
-                whiteSpace: "nowrap"
-              }}
-              onMouseEnter={(e) => {
-                if (!sending && text.trim()) {
-                  e.currentTarget.style.background = "#5b6eae";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!sending && text.trim()) {
-                  e.currentTarget.style.background = "#7289da";
-                }
-              }}
-            >
-              {sending ? "⏳" : "Send"}
-            </button>
+            <div style={{ display: "flex", gap: 12, animation: "slideInUp 0.7s ease-out" }}>
+              <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                placeholder="Message #t-break-community"
+                disabled={sending}
+                style={{
+                  flex: 1,
+                  padding: "12px 16px",
+                  border: wordCount > 30 ? "2px solid #ff4444" : "none",
+                  borderRadius: 8,
+                  fontSize: "0.95rem",
+                  fontFamily: "inherit",
+                  transition: "all 0.2s ease",
+                  background: "#2c2f33",
+                  color: "#dcddde",
+                  outline: "none"
+                }}
+              />
+              <button
+                onClick={handleSend}
+                disabled={sending || !text.trim() || wordCount > 30}
+                style={{
+                  padding: "12px 24px",
+                  background: sending || !text.trim() || wordCount > 30 ? "#4f545c" : "#7289da",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  cursor: sending || !text.trim() || wordCount > 30 ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  whiteSpace: "nowrap"
+                }}
+                onMouseEnter={(e) => {
+                  if (!sending && text.trim() && wordCount <= 30) {
+                    e.currentTarget.style.background = "#5b6eae";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!sending && text.trim() && wordCount <= 30) {
+                    e.currentTarget.style.background = "#7289da";
+                  }
+                }}
+              >
+                {sending ? "⏳" : "Send"}
+              </button>
+            </div>
+            <div style={{
+              marginTop: 8,
+              fontSize: "0.75rem",
+              color: wordCount > 30 ? "#ff4444" : "#72767d",
+              textAlign: "right",
+              fontWeight: wordCount > 30 ? 600 : 400
+            }}>
+              {wordCount > 30 ? "⚠️ " : ""}{wordCount}/30 words {wordCount > 30 && "- Too long!"}
+            </div>
           </div>
         )}
       </div>
