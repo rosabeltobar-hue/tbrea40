@@ -41,6 +41,7 @@ export interface User {
   // Chat profile (anonymous for privacy)
   chatDisplayName?: string;
   chatAvatar?: string;
+  chatAvatarCustom?: string; // Custom uploaded image URL
   
   // Optional notification preferences stored on the user document
   notifications?: NotificationPreferences;
@@ -105,6 +106,7 @@ export interface ChatMessage {
   userId: string;
   chatDisplayName: string; // Anonymous display name
   chatAvatar: string; // Avatar emoji/icon
+  chatAvatarCustom?: string; // Custom uploaded image URL
   avatarType: string;
   message: string;
   createdAt: number;

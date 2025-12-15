@@ -52,13 +52,14 @@ export default function ChatRoom() {
     })();
   }, [user]);
 
-  const handleProfileComplete = async (displayName: string, avatar: string) => {
+  const handleProfileComplete = async (displayName: string, avatar: string, customAvatarUrl?: string) => {
     if (!user) return;
     
     try {
       await createUser(user.uid, {
         chatDisplayName: displayName,
-        chatAvatar: avatar
+        chatAvatar: avatar,
+        chatAvatarCustom: customAvatarUrl
       });
       setChatProfile({ displayName, avatar });
       setShowProfileSetup(false);
@@ -74,15 +75,19 @@ export default function ChatRoom() {
     setSending(true);
     try {
       const userData = await getUser(user.uid);
+      
+      // Use saved chat profile from state, not from userData
       await sendChatMessage(
         user.uid,
-        chatProfile.displayName,
-        chatProfile.avatar,
+        chatProfile.displayName, // Use state value consistently
+        chatProfile.avatar, // Use state value consistently  
         userData?.avatarType || "hero",
         text.trim(),
         userData?.streakDays || 0,
         false,
-        userData?.avatarMedals || []
+        userData?.avatarMedals || [],
+        0,
+        userData?.chatAvatarCustom // Pass custom avatar URL
       );
       setText("");
     } catch (err) {

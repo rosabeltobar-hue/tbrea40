@@ -22,12 +22,14 @@ export const sendChatMessage = async (
   streakDays: number,
   relapse: boolean,
   medals: string[],
-  coins: number = 0
+  coins: number = 0,
+  chatAvatarCustom?: string
 ) => {
   const data: Omit<ChatMessage, "id" | "createdAt"> & { createdAt: any } = {
     userId,
     chatDisplayName,
     chatAvatar,
+    chatAvatarCustom,
     avatarType,
     message: text,
     streakDays,
@@ -70,6 +72,7 @@ export const subscribeToChatMessages = (
         userId: data.userId,
         chatDisplayName: data.chatDisplayName || "Anonymous",
         chatAvatar: data.chatAvatar || "smile",
+        chatAvatarCustom: data.chatAvatarCustom,
         avatarType: data.avatarType,
         message: data.message,
         streakDays: data.streakDays,

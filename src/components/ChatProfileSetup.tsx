@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
 import { avatarOptions, generateAnonymousUsername, getAllCategories, getCategoryAvatars } from "../utils/avatars";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useUser } from "../context/UserContext";
 
 interface ChatProfileSetupProps {
-  onComplete: (displayName: string, avatar: string) => void;
+  onComplete: (displayName: string, avatar: string, customAvatarUrl?: string) => void;
   onCancel: () => void;
 }
 
 export default function ChatProfileSetup({ onComplete, onCancel }: ChatProfileSetupProps) {
+  const { user } = useUser();
   const [displayName, setDisplayName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Classic");
   const [suggestedNames, setSuggestedNames] = useState<string[]>([]);
+  const [customImage, setCustomImage] = useState<File | null>(null);
+  const [customImagePreview, setCustomImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   
   useEffect(() => {
     // Generate 3 suggested anonymous names
@@ -21,10 +27,105 @@ export default function ChatProfileSetup({ onComplete, onCancel }: ChatProfileSe
     ]);
   }, []);
 
-  const handleSubmit = () => {
-    if (displayName.trim() && selectedAvatar) {
-      onComplete(displayName.trim(), selectedAvatar);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image must be less than 5MB");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        return;
+      }
+      
+      setCustomImage(file);
+      setSelectedAvatar("custom");
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCustomImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
+  };
+
+  const uploadCustomAvatar = async (): Promise<string | null> => {
+    if (!customImage || !user) return null;
+    
+    try {
+      setUploading(true);
+      const storage = getStorage();
+      const fileName = `avatars/${user.uid}_${Date.now()}.jpg`;
+      const storageRef = ref(storage, fileName);
+      
+      // Resize image before upload
+      const resizedBlob = await resizeImage(customImage, 200, 200);
+      
+      await uploadBytes(storageRef, resizedBlob);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      alert("Failed to upload avatar. Please try again.");
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Failed to resize image"));
+          }
+        }, "image/jpeg", 0.8);
+      };
+      
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!displayName.trim() || !selectedAvatar) return;
+    
+    let customAvatarUrl: string | undefined;
+    
+    if (selectedAvatar === "custom" && customImage) {
+      customAvatarUrl = await uploadCustomAvatar() || undefined;
+      if (!customAvatarUrl) return; // Upload failed
+    }
+    
+    onComplete(displayName.trim(), selectedAvatar, customAvatarUrl);
   };
 
   const categories = getAllCategories();
@@ -154,8 +255,84 @@ export default function ChatProfileSetup({ onComplete, onCancel }: ChatProfileSe
           }}>
             Choose Your Avatar
           </label>
+                    {/* Upload Custom Photo Option */}
+          <div style={{
+            padding: 15,
+            background: "var(--gray-lightest)",
+            borderRadius: 8,
+            marginBottom: 15,
+            border: selectedAvatar === "custom" ? "3px solid var(--joy-teal)" : "2px solid transparent"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+              <label style={{
+                flex: 1,
+                padding: "10px 16px",
+                background: "var(--gradient-sunset)",
+                color: "white",
+                borderRadius: 8,
+                cursor: "pointer",
+                textAlign: "center",
+                fontWeight: 600,
+                fontSize: "0.95rem"
+              }}>
+                📸 Upload Your Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+                />
+              </label>
+              {customImagePreview && (
+                <div style={{ position: "relative" }}>
+                  <img
+                    src={customImagePreview}
+                    alt="Preview"
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      border: "3px solid var(--joy-teal)"
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      setCustomImage(null);
+                      setCustomImagePreview(null);
+                      setSelectedAvatar("");
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: -5,
+                      right: -5,
+                      background: "#f44336",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: 20,
+                      height: 20,
+                      cursor: "pointer",
+                      fontSize: "0.7rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+            <div style={{ fontSize: "0.75rem", color: "var(--gray-medium)", marginTop: 8 }}>
+              Max 5MB • JPG, PNG, GIF • Will be resized to 200x200px
+            </div>
+          </div>
           
-          {/* Category Tabs */}
+          <div style={{ textAlign: "center", color: "var(--gray-medium)", fontSize: "0.9rem", marginBottom: 10 }}>
+            — OR choose an emoji avatar —
+          </div>
+                    {/* Category Tabs */}
           <div style={{ 
             display: "flex", 
             gap: 8, 
@@ -231,9 +408,22 @@ export default function ChatProfileSetup({ onComplete, onCancel }: ChatProfileSe
               Preview:
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ fontSize: "2.5rem" }}>
-                {avatarOptions.find(a => a.id === selectedAvatar)?.display}
-              </div>
+              {selectedAvatar === "custom" && customImagePreview ? (
+                <img
+                  src={customImagePreview}
+                  alt="Avatar"
+                  style={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                    objectFit: "cover"
+                  }}
+                />
+              ) : (
+                <div style={{ fontSize: "2.5rem" }}>
+                  {avatarOptions.find(a => a.id === selectedAvatar)?.display}
+                </div>
+              )}
               <div>
                 <div style={{ fontWeight: 700, color: "var(--joy-teal)", fontSize: "1.1rem" }}>
                   {displayName}
@@ -266,23 +456,23 @@ export default function ChatProfileSetup({ onComplete, onCancel }: ChatProfileSe
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!displayName.trim() || !selectedAvatar}
+            disabled={!displayName.trim() || !selectedAvatar || uploading}
             style={{
               flex: 2,
               padding: 12,
-              background: displayName.trim() && selectedAvatar 
+              background: displayName.trim() && selectedAvatar && !uploading
                 ? "var(--gradient-ocean)" 
                 : "var(--gray-light)",
               color: "white",
               border: "none",
               borderRadius: 8,
-              cursor: displayName.trim() && selectedAvatar ? "pointer" : "not-allowed",
+              cursor: displayName.trim() && selectedAvatar && !uploading ? "pointer" : "not-allowed",
               fontSize: "1rem",
               fontWeight: 600,
-              opacity: displayName.trim() && selectedAvatar ? 1 : 0.5
+              opacity: displayName.trim() && selectedAvatar && !uploading ? 1 : 0.5
             }}
           >
-            ✓ Join Chat
+            {uploading ? "⏳ Uploading..." : "✓ Join Chat"}
           </button>
         </div>
 
