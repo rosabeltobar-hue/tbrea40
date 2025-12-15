@@ -7,6 +7,7 @@ import { ChatMessage } from "../types";
 import Avatar from "../components/Avatar";
 import { useOfflineContext } from "../context/OfflineContext";
 import ChatProfileSetup from "../components/ChatProfileSetup";
+import ChatPolicyModal from "../components/ChatPolicyModal";
 import { getUser, createUser } from "../services/user";
 import { avatarOptions } from "../utils/avatars";
 
@@ -36,6 +37,7 @@ export default function ChatRoom() {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [chatProfile, setChatProfile] = useState<{ displayName: string; avatar: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +86,25 @@ export default function ChatRoom() {
     } catch (err) {
       console.error("Error saving chat profile:", err);
       alert("Failed to save profile. Please try again.");
+    }
+  };
+
+  const handleAcceptPolicy = async () => {
+    if (!user) return;
+    try {
+      await createUser(user.uid, { chatPolicyAccepted: true });
+      setShowPolicyModal(false);
+      
+      // Now check if they need to set up profile
+      const userData = await getUser(user.uid);
+      if (userData?.chatDisplayName && userData?.chatAvatar) {
+        setChatProfile({ displayName: userData.chatDisplayName, avatar: userData.chatAvatar });
+      } else {
+        setShowProfileSetup(true);
+      }
+    } catch (error) {
+      console.error("Error accepting policy:", error);
+      alert("Failed to save policy acceptance. Please try again.");
     }
   };
 

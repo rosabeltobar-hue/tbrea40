@@ -42,6 +42,7 @@ export interface User {
   chatDisplayName?: string;
   chatAvatar?: string;
   chatAvatarCustom?: string; // Custom uploaded image URL
+  chatPolicyAccepted?: boolean; // User accepted chat policy (one-time)
   
   // Optional notification preferences stored on the user document
   notifications?: NotificationPreferences;
