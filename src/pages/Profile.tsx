@@ -78,24 +78,9 @@ export default function Profile() {
       const existingUser = await getUser(user.uid);
       
       await createUser(user.uid, { 
-        // Preserve required fields with defaults if they don't exist
-        id: user.uid,
-        email: user.email || undefined,
-        createdAt: existingUser?.createdAt || Date.now(),
-        plan: existingUser?.plan || "free",
+        // Optional profile fields only - createUser uses merge
         usageType: usageType as any,
         frequency: frequency as any,
-        durationMonths: existingUser?.durationMonths || 0,
-        goal: existingUser?.goal || "40day",
-        currentDay: existingUser?.currentDay || 0,
-        relapseCount: existingUser?.relapseCount || 0,
-        streakDays: existingUser?.streakDays || 0,
-        totalCoins: existingUser?.totalCoins || 0,
-        avatarType: existingUser?.avatarType || "default",
-        avatarBorderColor: existingUser?.avatarBorderColor || "#4CAF50",
-        avatarMedals: existingUser?.avatarMedals || [],
-        
-        // Optional profile fields
         startDate: iso,
         age: age || undefined,
         weight: weight || undefined,

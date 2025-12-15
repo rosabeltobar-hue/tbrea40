@@ -100,9 +100,10 @@ export default function ChatRoom() {
 
   return (
     <div style={{
-      padding: 20,
       minHeight: "100vh",
-      background: "linear-gradient(135deg, rgba(142, 68, 173, 0.05) 0%, rgba(26, 188, 156, 0.05) 100%)"
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      display: "flex",
+      flexDirection: "column"
     }}>
       {/* Chat Profile Setup Modal */}
       {showProfileSetup && user && (
@@ -112,52 +113,80 @@ export default function ChatRoom() {
         />
       )}
 
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div style={{ 
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        maxWidth: 1200,
+        width: "100%",
+        margin: "0 auto",
+        padding: 20
+      }}>
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 30, animation: "slideInDown 0.6s ease-out" }}>
-          <h1 style={{
-            fontSize: "2.5rem",
-            background: "var(--gradient-ocean)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            marginBottom: 10
-          }}>
-            💬 Community Chat 💬
-          </h1>
-          <p style={{ color: "var(--joy-teal)", fontWeight: 600, fontSize: "1.05rem" }}>
-            Support each other on this amazing journey!
-          </p>
-          
+        <div style={{ 
+          background: "rgba(255,255,255,0.95)",
+          borderRadius: "12px 12px 0 0",
+          padding: "15px 20px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          animation: "slideInDown 0.6s ease-out"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+            <div style={{ 
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              background: "#4CAF50",
+              boxShadow: "0 0 10px #4CAF50",
+              animation: "pulse 2s infinite"
+            }} />
+            <div>
+              <h1 style={{
+                fontSize: "1.5rem",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                margin: 0
+              }}>
+                💬 T-Break Community
+              </h1>
+              <p style={{ color: "var(--gray-medium)", margin: 0, fontSize: "0.85rem" }}>
+                {messages.length} messages • {user ? "Online" : "Offline"}
+              </p>
+            </div>
+          </div>
           {chatProfile && (
             <div style={{
-              display: "inline-flex",
+              display: "flex",
               alignItems: "center",
               gap: 10,
-              background: "white",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               padding: "8px 16px",
               borderRadius: 20,
-              boxShadow: "var(--shadow-sm)",
-              marginTop: 10
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
             }}>
-              <span style={{ fontSize: "1.5rem" }}>
+              <span style={{ fontSize: "1.2rem" }}>
                 {avatarOptions.find(a => a.id === chatProfile.avatar)?.display}
               </span>
-              <span style={{ fontWeight: 600, color: "var(--joy-purple)" }}>
-                Chatting as: {chatProfile.displayName}
+              <span style={{ fontWeight: 600, color: "white", fontSize: "0.9rem" }}>
+                {chatProfile.displayName}
               </span>
               <button
                 onClick={() => setShowProfileSetup(true)}
                 style={{
-                  background: "none",
-                  border: "none",
-                  color: "var(--joy-teal)",
+                  background: "rgba(255,255,255,0.2)",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  color: "white",
                   cursor: "pointer",
-                  fontSize: "1rem",
-                  padding: 4
+                  fontSize: "0.85rem",
+                  padding: "4px 8px",
+                  borderRadius: 6
                 }}
-                title="Change chat identity"
+                title="Change identity"
               >
-                ✏️
+                Edit
               </button>
             </div>
           )}
