@@ -120,6 +120,19 @@ export default function Dashboard() {
       minHeight: "100vh",
       background: "linear-gradient(135deg, rgba(26, 188, 156, 0.05) 0%, rgba(142, 68, 173, 0.05) 100%)"
     }}>
+      {/* App Disclaimer Modal (First Time Only) */}
+      {showDisclaimerModal && user && (
+        <AppDisclaimerModal onAccept={handleAcceptDisclaimer} />
+      )}
+
+      {/* Nightly Check-in Modal */}
+      {showNightlyCheckIn && user && (
+        <NightlyCheckIn
+          onSubmit={handleNightlyCheckInSubmit}
+          onClose={() => setShowNightlyCheckIn(false)}
+        />
+      )}
+
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 40, animation: "slideInDown 0.6s ease-out" }}>
