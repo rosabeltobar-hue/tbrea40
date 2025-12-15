@@ -37,6 +37,11 @@ export interface User {
   avatarType: string;
   avatarBorderColor: string;
   avatarMedals: string[];
+  
+  // Chat profile (anonymous for privacy)
+  chatDisplayName?: string;
+  chatAvatar?: string;
+  
   // Optional notification preferences stored on the user document
   notifications?: NotificationPreferences;
   // FCM token for sending push notifications to this device
@@ -98,6 +103,8 @@ export interface NotificationPreferences {
 export interface ChatMessage {
   id: string;
   userId: string;
+  chatDisplayName: string; // Anonymous display name
+  chatAvatar: string; // Avatar emoji/icon
   avatarType: string;
   message: string;
   createdAt: number;

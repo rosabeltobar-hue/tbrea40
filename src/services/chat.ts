@@ -15,6 +15,8 @@ const COLLECTION = "chatMessages";
 
 export const sendChatMessage = async (
   userId: string,
+  chatDisplayName: string,
+  chatAvatar: string,
   avatarType: string,
   text: string,
   streakDays: number,
@@ -24,6 +26,8 @@ export const sendChatMessage = async (
 ) => {
   const data: Omit<ChatMessage, "id" | "createdAt"> & { createdAt: any } = {
     userId,
+    chatDisplayName,
+    chatAvatar,
     avatarType,
     message: text,
     streakDays,
@@ -64,6 +68,8 @@ export const subscribeToChatMessages = (
       return {
         id: doc.id,
         userId: data.userId,
+        chatDisplayName: data.chatDisplayName || "Anonymous",
+        chatAvatar: data.chatAvatar || "smile",
         avatarType: data.avatarType,
         message: data.message,
         streakDays: data.streakDays,
