@@ -7,28 +7,10 @@ interface ChatPolicyModalProps {
 }
 
 export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModalProps) {
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(true); // Start enabled - users can read at their own pace
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Auto-enable if content fits without scrolling
-  useEffect(() => {
-    if (contentRef.current) {
-      const element = contentRef.current;
-      // Check if content is already fully visible (no scroll needed)
-      if (element.scrollHeight <= element.clientHeight) {
-        setHasScrolled(true);
-      }
-    }
-  }, []);
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const element = e.currentTarget;
-    const scrollPercentage = (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100;
-    // Enable button at 80% scroll or if content is already fully visible
-    if (scrollPercentage >= 80 && !hasScrolled) {
-      setHasScrolled(true);
-    }
-  };
 
   return (
     <div style={{
@@ -75,7 +57,6 @@ export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModal
         {/* Content */}
         <div 
           ref={contentRef}
-          onScroll={handleScroll}
           style={{
             flex: 1,
             overflowY: "auto",
@@ -133,12 +114,11 @@ export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModal
           <div style={{
             textAlign: "center",
             marginTop: 20,
-            color: hasScrolled ? "#4CAF50" : "var(--gray-medium)",
+            color: "#4CAF50",
             fontSize: "0.85rem",
-            fontWeight: hasScrolled ? 600 : 400,
-            fontStyle: hasScrolled ? "normal" : "italic"
+            fontWeight: 600
           }}>
-            {hasScrolled ? "✅ Ready to accept!" : "📜 Scroll down to continue"}
+            ✅ Ready to accept!
           </div>
         </div>
 
@@ -176,30 +156,25 @@ export default function ChatPolicyModal({ onAccept, onDecline }: ChatPolicyModal
           </button>
           <button
             onClick={onAccept}
-            disabled={!hasScrolled}
             style={{
               padding: "14px 32px",
-              background: hasScrolled 
-                ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" 
-                : "#ccc",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               color: "white",
               border: "none",
               borderRadius: 25,
               fontSize: "1rem",
               fontWeight: 700,
-              cursor: hasScrolled ? "pointer" : "not-allowed",
+              cursor: "pointer",
               transition: "all 0.2s ease",
-              boxShadow: hasScrolled ? "0 4px 15px rgba(102, 126, 234, 0.4)" : "none"
+              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)"
             }}
             onMouseEnter={(e) => {
-              if (hasScrolled) {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.5)";
-              }
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.5)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = hasScrolled ? "0 4px 15px rgba(102, 126, 234, 0.4)" : "none";
+              e.currentTarget.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.4)";
             }}
           >
             ✨ I Accept - Let's Chat!
