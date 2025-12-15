@@ -8,6 +8,11 @@ export interface User {
   plan: "free" | "0.99" | "3" | "10";
   planExpiresAt?: number;
 
+  // User demographics
+  age?: number;
+  weight?: number; // in kg
+  yearsOfUse?: number;
+
   // Usage data
   usageType: "smoke" | "dab" | "vape" | "edible" | "other";
   frequency: "light" | "moderate" | "heavy" | "chronic";
@@ -15,6 +20,7 @@ export interface User {
   goal: "40day" | "quit";
   // Optional T-break start date in ISO format (e.g. "2025-12-07T00:00:00.000Z")
   startDate?: string;
+  recommendedBreakDays?: number; // Calculated based on usage pattern
 
   // Gamification
   currentDay: number;
@@ -71,6 +77,10 @@ export interface DailyEntry {
 
 // ================= NOTIFICATIONS ==================
 export interface NotificationPreferences {
+  enabled?: boolean;
+  dailyReminder?: boolean;
+  milestones?: boolean;
+  encouragement?: boolean;
   chatMention?: boolean;
   dailyCheckin?: boolean;
   quoteOfDay?: boolean;
