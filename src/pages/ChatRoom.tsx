@@ -56,6 +56,14 @@ export default function ChatRoom() {
     (async () => {
       try {
         const userData = await getUser(user.uid);
+        
+        // Check if user has accepted chat policy first
+        if (!userData?.chatPolicyAccepted) {
+          setShowPolicyModal(true);
+          setLoading(false);
+          return;
+        }
+        
         if (userData?.chatDisplayName && userData?.chatAvatar) {
           setChatProfile({
             displayName: userData.chatDisplayName,
@@ -144,6 +152,11 @@ export default function ChatRoom() {
       display: "flex",
       flexDirection: "column"
     }}>
+      {/* Chat Policy Modal (First Time Only) */}
+      {showPolicyModal && user && (
+        <ChatPolicyModal onAccept={handleAcceptPolicy} />
+      )}
+
       {/* Chat Profile Setup Modal */}
       {showProfileSetup && user && (
         <ChatProfileSetup
