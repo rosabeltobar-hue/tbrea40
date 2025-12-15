@@ -8,6 +8,7 @@ import { getWithdrawalTimeline, getSymptomsForDay, getDifficultyColor, getDiffic
 import { NightlyCheckIn } from "../components/NightlyCheckIn";
 import SymptomTracker from "../components/SymptomTracker";
 import WithdrawalTimeline from "../components/WithdrawalTimeline";
+import AppDisclaimerModal from "../components/AppDisclaimerModal";
 import { createUser } from "../services/user";
 
 export default function Dashboard() {
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const [metaboliteData, setMetaboliteData] = useState<any>(null);
   const [selectedWellnessCategory, setSelectedWellnessCategory] = useState<string | null>(null);
   const [showSymptomTracker, setShowSymptomTracker] = useState(false);
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -27,6 +29,11 @@ export default function Dashboard() {
     (async () => {
       const doc = await getUser(user.uid);
       setUserData(doc);
+      
+      // Check if user has accepted disclaimer
+      if (!doc?.disclaimerAccepted) {
+        setShowDisclaimerModal(true);
+      }
       
       // Calculate days clean
       if (doc?.startDate) {
@@ -70,6 +77,17 @@ export default function Dashboard() {
     
     return () => clearInterval(interval);
   }, [user]);
+
+  const handleAcceptDisclaimer = async () => {
+    if (!user) return;
+    try {
+      await createUser(user.uid, { disclaimerAccepted: true });
+      setShowDisclaimerModal(false);
+    } catch (error) {
+      console.error("Error accepting disclaimer:", error);
+      alert("Failed to save. Please try again.");
+    }
+  };
 
   const handleNightlyCheckInSubmit = async (mood: string, notes: string) => {
     if (!user) return;

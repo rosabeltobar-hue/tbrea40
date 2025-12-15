@@ -43,6 +43,7 @@ export interface User {
   chatAvatar?: string;
   chatAvatarCustom?: string; // Custom uploaded image URL
   chatPolicyAccepted?: boolean; // User accepted chat policy (one-time)
+  disclaimerAccepted?: boolean; // User accepted app disclaimer (one-time, required)
   
   // Symptom tracking
   symptomReports?: SymptomReport[];
