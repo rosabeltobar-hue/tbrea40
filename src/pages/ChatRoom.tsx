@@ -10,6 +10,24 @@ import ChatProfileSetup from "../components/ChatProfileSetup";
 import { getUser, createUser } from "../services/user";
 import { avatarOptions } from "../utils/avatars";
 
+// Get border color based on streak days
+const getStreakColor = (streakDays: number): string => {
+  if (streakDays >= 90) return "#B9F2FF"; // Diamond (90+ days)
+  if (streakDays >= 30) return "#FFD700"; // Gold (30+ days)
+  if (streakDays >= 14) return "#C0C0C0"; // Silver (14+ days)
+  if (streakDays >= 7) return "#CD7F32"; // Bronze (7+ days)
+  return "#4CAF50"; // Green (starting)
+};
+
+// Get tier name for display
+const getStreakTier = (streakDays: number): string => {
+  if (streakDays >= 90) return "💎 Diamond";
+  if (streakDays >= 30) return "🥇 Gold";
+  if (streakDays >= 14) return "🥈 Silver";
+  if (streakDays >= 7) return "🥉 Bronze";
+  return "🌱 Starting";
+};
+
 export default function ChatRoom() {
   const { user } = useUser();
   const { isOnline } = useOfflineContext();
@@ -313,9 +331,35 @@ export default function ChatRoom() {
                     <div style={{ 
                       flexShrink: 0, 
                       marginRight: 12,
-                      fontSize: "2.5rem"
                     }}>
-                      {messageAvatar?.display || "😊"}
+                      {m.chatAvatarCustom ? (
+                        <img
+                          src={m.chatAvatarCustom}
+                          alt="avatar"
+                          style={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            border: `3px solid ${getStreakColor(m.streakDays)}`,
+                            boxShadow: `0 0 12px ${getStreakColor(m.streakDays)}80`
+                          }}
+                        />
+                      ) : (
+                        <div style={{ 
+                          fontSize: "2.5rem",
+                          width: 50,
+                          height: 50,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "50%",
+                          border: `3px solid ${getStreakColor(m.streakDays)}`,
+                          boxShadow: `0 0 12px ${getStreakColor(m.streakDays)}80`
+                        }}>
+                          {messageAvatar?.display || "😊"}
+                        </div>
+                      )}
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{
@@ -328,11 +372,17 @@ export default function ChatRoom() {
                       </div>
                       <div style={{
                         fontSize: "0.75rem",
-                        color: "var(--joy-orange)",
+                        background: `linear-gradient(135deg, ${getStreakColor(m.streakDays)}, ${getStreakColor(m.streakDays)}dd)`,
+                        color: "white",
                         fontWeight: 600,
-                        marginBottom: 6
+                        marginBottom: 6,
+                        display: "inline-block",
+                        padding: "4px 10px",
+                        borderRadius: 12,
+                        boxShadow: `0 2px 6px ${getStreakColor(m.streakDays)}60`,
+                        textShadow: "0 1px 2px rgba(0,0,0,0.3)"
                       }}>
-                        🔥 Streak: {m.streakDays} days
+                        {getStreakTier(m.streakDays)} · {m.streakDays} days
                       </div>
                       <div style={{
                         fontSize: "1rem",
