@@ -1,5 +1,6 @@
 // src/pages/ChatRoom.tsx
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { sendChatMessage, subscribeToChatMessages } from "../services/chat";
 import { ChatMessage } from "../types";
@@ -12,6 +13,7 @@ import { avatarOptions } from "../utils/avatars";
 export default function ChatRoom() {
   const { user } = useUser();
   const { isOnline } = useOfflineContext();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -167,9 +169,42 @@ export default function ChatRoom() {
             boxShadow: "var(--shadow-md)",
             animation: "slideInUp 0.6s ease-out"
           }}>
-            <p style={{ fontSize: "1.1rem", fontWeight: 600, margin: 0 }}>
+            <p style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: 15 }}>
               🔐 You must be logged in to send messages.
             </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button
+                onClick={() => navigate("/login")}
+                style={{
+                  padding: "10px 24px",
+                  background: "white",
+                  color: "var(--joy-orange)",
+                  border: "none",
+                  borderRadius: 8,
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "var(--shadow-md)"
+                }}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate("/signup")}
+                style={{
+                  padding: "10px 24px",
+                  background: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  border: "2px solid white",
+                  borderRadius: 8,
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                Sign Up
+              </button>
+            </div>
           </div>
         )}
 
