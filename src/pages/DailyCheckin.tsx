@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import { saveDailyEntry, getDailyEntry } from "../services/dailyEntries";
-import { estimateMetaboliteClearPercent } from "../services/metabolites";
+import { calculateMetaboliteClearance } from "../utils/wellness";
 import { computeDayNumber } from "../utils/dates";
 import { DailyEntry } from "../types";
 
@@ -10,10 +10,6 @@ export default function DailyCheckin() {
   const { user, profile } = useUser();
   const [mood, setMood] = useState<string>("🙂");
   const [usedToday, setUsedToday] = useState(false);
-  const [daysSinceLastUse, setDaysSinceLastUse] = useState<number>(0);
-  const [frequency, setFrequency] = useState<
-    "light" | "moderate" | "heavy" | "chronic"
-  >("moderate");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [computedClearPercent, setComputedClearPercent] = useState<number | null>(
@@ -21,6 +17,7 @@ export default function DailyCheckin() {
   );
 
   const currentDay = profile?.startDate ? computeDayNumber(profile.startDate) : 1;
+  const daysClean = currentDay - 1; // Current day 1 means 0 days clean
 
   const moods = [
     { emoji: "😔", label: "Struggling", color: "var(--gradient-sunset)" },
@@ -60,9 +57,20 @@ export default function DailyCheckin() {
   };
 
   useEffect(() => {
-    const pct = estimateMetaboliteClearPercent(daysSinceLastUse, frequency);
-    setComputedClearPercent(pct);
-  }, [daysSinceLastUse, frequency]);
+    // Calculate metabolite clearance using the same formula as Dashboard
+    if (profile?.frequency && profile?.yearsOfUse && profile?.weight && profile?.usageType && daysClean >= 0) {
+      const clearance = calculateMetaboliteClearance(
+        profile.frequency,
+        profile.yearsOfUse,
+        profile.weight,
+        profile.usageType,
+        daysClean
+      );
+      setComputedClearPercent(clearance.currentClearancePercent);
+    } else {
+      setComputedClearPercent(null);
+    }
+  }, [profile, daysClean]);
 
   useEffect(() => {
     if (!user) return;
@@ -230,77 +238,6 @@ export default function DailyCheckin() {
           </label>
         </div>
 
-        {/* Days Since Last Use */}
-        <div style={{
-          background: "white",
-          padding: 20,
-          borderRadius: "var(--radius-lg)",
-          marginBottom: 20,
-          boxShadow: "var(--shadow-md)",
-          animation: "slideInUp 0.75s ease-out"
-        }}>
-          <label style={{
-            display: "block",
-            fontWeight: 600,
-            marginBottom: 12,
-            color: "var(--joy-purple)"
-          }}>
-            Days since last use: 📅
-          </label>
-          <input
-            type="number"
-            min={0}
-            value={daysSinceLastUse}
-            onChange={(e) => setDaysSinceLastUse(Number(e.target.value))}
-            style={{
-              width: "100%",
-              padding: 12,
-              border: "2px solid var(--gray-light)",
-              borderRadius: "var(--radius-md)",
-              fontSize: "1rem",
-              transition: "all var(--transition-normal)"
-            }}
-          />
-        </div>
-
-        {/* Frequency Selection */}
-        <div style={{
-          background: "white",
-          padding: 20,
-          borderRadius: "var(--radius-lg)",
-          marginBottom: 20,
-          boxShadow: "var(--shadow-md)",
-          animation: "slideInUp 0.8s ease-out"
-        }}>
-          <label style={{
-            display: "block",
-            fontWeight: 600,
-            marginBottom: 12,
-            color: "var(--joy-purple)"
-          }}>
-            Usage frequency: 📊
-          </label>
-          <select
-            value={frequency}
-            onChange={(e) => setFrequency(e.target.value as any)}
-            style={{
-              width: "100%",
-              padding: 12,
-              border: "2px solid var(--joy-teal)",
-              borderRadius: "var(--radius-md)",
-              fontSize: "1rem",
-              background: "white",
-              cursor: "pointer",
-              transition: "all var(--transition-normal)"
-            }}
-          >
-            <option value="light">🟢 Light</option>
-            <option value="moderate">🟡 Moderate</option>
-            <option value="heavy">🔴 Heavy</option>
-            <option value="chronic">🔴🔴 Chronic</option>
-          </select>
-        </div>
-
         {/* Metabolite Clearance Display */}
         {computedClearPercent !== null && (
           <div style={{
@@ -313,7 +250,7 @@ export default function DailyCheckin() {
             animation: "slideInUp 0.85s ease-out"
           }}>
             <div style={{ fontSize: "0.9rem", opacity: 0.9, marginBottom: 8 }}>
-              Estimated metabolite clearance
+              Estimated metabolite clearance (Day {daysClean})
             </div>
             <div style={{
               fontSize: "2.5rem",
@@ -323,7 +260,7 @@ export default function DailyCheckin() {
               {computedClearPercent}% 🧪
             </div>
             <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.5 }}>
-              Based on your usage pattern, your system should be mostly clear soon!
+              Based on your usage pattern from your profile. This matches your Dashboard metabolite tracker!
             </p>
           </div>
         )}
