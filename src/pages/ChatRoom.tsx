@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { sendChatMessage, subscribeToChatMessages } from "../services/chat";
+import { getUser } from "../services/user";
 import { ChatMessage } from "../types";
 import Avatar from "../components/Avatar";
 
@@ -10,6 +11,13 @@ export default function ChatRoom() {
   const { user } = useUser();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    // Load user profile to get display name
+    getUser(user.uid).then(setUserProfile);
+  }, [user]);
 
   useEffect(() => {
     const unsub = subscribeToChatMessages(setMessages);
@@ -19,14 +27,18 @@ export default function ChatRoom() {
   const handleSend = async () => {
     if (!user || !text.trim()) return;
 
+    // Get display name from profile or use email or default
+    const displayName = userProfile?.displayName || user.email?.split('@')[0] || "Anonymous";
+
     await sendChatMessage(
       user.uid,
+      displayName,
       "hero", // later: real avatar
       text.trim(),
-      5, // example streak
+      userProfile?.streakDays || 0,
       false,
-      [],
-      0 // example coins
+      userProfile?.avatarMedals || [],
+      userProfile?.totalCoins || 0
     );
     setText("");
   };
@@ -67,8 +79,11 @@ export default function ChatRoom() {
             key={m.id}
             style={{
               display: "flex",
-              alignItems: "center",
-              marginBottom: 8
+              alignItems: "flex-start",
+              marginBottom: 16,
+              padding: 12,
+              background: "#f9f9f9",
+              borderRadius: 8
             }}
           >
             <Avatar
@@ -78,11 +93,36 @@ export default function ChatRoom() {
               medals={m.medals || []}
               coins={m.coins || 0}
             />
-            <div style={{ marginLeft: 8 }}>
-              <div style={{ fontSize: 12, color: "#666" }}>
-                Streak: {m.streakDays} days
+            <div style={{ marginLeft: 12, flex: 1 }}>
+              <div style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 8,
+                marginBottom: 4 
+              }}>
+                <span style={{ 
+                  fontWeight: 600, 
+                  color: "var(--joy-purple)",
+                  fontSize: "14px"
+                }}>
+                  {m.userName}
+                </span>
+                <span style={{ 
+                  fontSize: 11, 
+                  color: "#999",
+                  background: "#e0e0e0",
+                  padding: "2px 6px",
+                  borderRadius: 4
+                }}>
+                  {m.streakDays} day streak
+                </span>
               </div>
-              <div>{m.message}</div>
+              <div style={{ 
+                color: "#333",
+                lineHeight: 1.5
+              }}>
+                {m.message}
+              </div>
             </div>
           </div>
         ))}

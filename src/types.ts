@@ -2,6 +2,7 @@
 export interface User {
   id: string;
   email?: string;
+  displayName?: string; // User's display name for chat and profile
   createdAt: number;
 
   // Subscription info
@@ -98,6 +99,7 @@ export interface NotificationPreferences {
 export interface ChatMessage {
   id: string;
   userId: string;
+  userName: string; // Display name of the user
   avatarType: string;
   message: string;
   createdAt: number;

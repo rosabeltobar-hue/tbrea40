@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Profile() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [displayName, setDisplayName] = useState<string>("");
   const [startDate, setStartDate] = useState<string | null>(null);
   const [age, setAge] = useState<number | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
@@ -24,6 +25,7 @@ export default function Profile() {
       try {
         const doc = await getUser(user.uid);
         if (!mounted) return;
+        if (doc?.displayName) setDisplayName(doc.displayName);
         if (doc?.startDate) {
           const d = new Date(doc.startDate);
           const isoDate = d.toISOString().slice(0, 10);
@@ -81,6 +83,7 @@ export default function Profile() {
         // Preserve required fields with defaults if they don't exist
         id: user.uid,
         email: user.email || undefined,
+        displayName: displayName || undefined,
         createdAt: existingUser?.createdAt || Date.now(),
         plan: existingUser?.plan || "free",
         usageType: usageType as any,
@@ -163,6 +166,42 @@ export default function Profile() {
         <div style={{ marginBottom: 20 }}>
           <strong>Signed in as:</strong>{" "}
           <span style={{ color: "var(--joy-teal)" }}>{user ? user.email : "Not signed in"}</span>
+        </div>
+
+        {/* Display Name for Chat */}
+        <div style={{ 
+          marginBottom: 30, 
+          paddingBottom: 20, 
+          borderBottom: "1px solid var(--gray-light)" 
+        }}>
+          <h3 style={{ color: "var(--joy-purple)", marginBottom: 15 }}>👤 Chat Display Name</h3>
+          
+          <div style={{ marginBottom: 15 }}>
+            <label style={{ display: "block", marginBottom: 5, fontWeight: 600 }}>
+              Display Name (shown in community chat)
+            </label>
+            <input
+              type="text"
+              placeholder="Enter your chat name"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              style={{ 
+                width: "100%", 
+                padding: 10, 
+                borderRadius: 6, 
+                border: "2px solid var(--joy-teal)",
+                fontSize: "1rem"
+              }}
+            />
+            <p style={{ 
+              fontSize: "0.85rem", 
+              color: "var(--gray-medium)", 
+              marginTop: 5,
+              marginBottom: 0 
+            }}>
+              This name will be visible to other users in the chat room
+            </p>
+          </div>
         </div>
 
         {/* Personal Information */}
