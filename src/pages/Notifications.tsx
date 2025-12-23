@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import {
   updateNotificationPreferences,
@@ -120,6 +121,22 @@ export default function Notifications() {
 
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+      <Link to="/" style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "10px 20px",
+        background: "var(--gradient-cool)",
+        color: "white",
+        borderRadius: "12px",
+        textDecoration: "none",
+        fontWeight: 600,
+        marginBottom: 20,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}>
+        ← Back to Main Menu
+      </Link>
+      
       <h1>🔔 Notification Preferences</h1>
       <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>
         All notifications are optional. Control exactly what you want to receive.

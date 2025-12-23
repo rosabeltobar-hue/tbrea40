@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { initiateDonation } from "../services/donations";
 
@@ -120,6 +121,22 @@ export default function Donations() {
 
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+      <Link to="/" style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "10px 20px",
+        background: "var(--gradient-cool)",
+        color: "white",
+        borderRadius: "12px",
+        textDecoration: "none",
+        fontWeight: 600,
+        marginBottom: 20,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}>
+        ← Back to Main Menu
+      </Link>
+      
       <h1>Support Us 💚</h1>
 
       <div style={{ background: "#f5f5f5", padding: 16, borderRadius: 8, marginBottom: 24 }}>

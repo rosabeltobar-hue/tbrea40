@@ -128,6 +128,22 @@ export default function Profile() {
       background: "linear-gradient(135deg, rgba(26, 188, 156, 0.03) 0%, rgba(142, 68, 173, 0.03) 100%)",
       minHeight: "100vh"
     }}>
+      <Link to="/" style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "10px 20px",
+        background: "var(--gradient-cool)",
+        color: "white",
+        borderRadius: "12px",
+        textDecoration: "none",
+        fontWeight: 600,
+        marginBottom: 20,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}>
+        ← Back to Main Menu
+      </Link>
+      
       <h1 style={{
         background: "var(--gradient-ocean)",
         WebkitBackgroundClip: "text",

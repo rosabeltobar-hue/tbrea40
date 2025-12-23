@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { estimateMetabolites, UsageFrequency } from "../utils/metabolites";
 
 export default function MetaboliteEstimator() {
@@ -13,6 +14,22 @@ export default function MetaboliteEstimator() {
 
   return (
     <div style={{ padding: 20 }}>
+      <Link to="/" style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "10px 20px",
+        background: "var(--gradient-cool)",
+        color: "white",
+        borderRadius: "12px",
+        textDecoration: "none",
+        fontWeight: 600,
+        marginBottom: 20,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}>
+        ← Back to Main Menu
+      </Link>
+      
       <h1>Metabolite Clearance Estimator</h1>
       <p style={{ fontSize: 12 }}>
         This is an approximate educational tool, not medical or legal advice.

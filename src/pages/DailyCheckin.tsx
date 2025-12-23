@@ -1,5 +1,6 @@
 // src/pages/DailyCheckin.tsx
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { saveDailyEntry, getDailyEntry } from "../services/dailyEntries";
 import { calculateMetaboliteClearance } from "../utils/wellness";
@@ -100,6 +101,27 @@ export default function DailyCheckin() {
       background: "linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%)"
     }}>
       <div style={{ maxWidth: 600, margin: "0 auto" }}>
+        {/* Back Button */}
+        <Link to="/" style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "10px 20px",
+          background: "var(--gradient-cool)",
+          color: "white",
+          borderRadius: "var(--radius-lg)",
+          textDecoration: "none",
+          fontWeight: 600,
+          marginBottom: 20,
+          boxShadow: "var(--shadow-md)",
+          transition: "transform 0.2s",
+        }}
+        onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+        onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+        >
+          ← Back to Main Menu
+        </Link>
+        
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 30, animation: "slideInDown 0.6s ease-out" }}>
           <h1 style={{
