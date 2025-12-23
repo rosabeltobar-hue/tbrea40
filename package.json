@@ -37,7 +37,7 @@
     "deploy": "gh-pages -d build",
     "start:local": "BROWSER=none PUBLIC_URL=/ react-scripts start"
   },
-  "homepage": ".",
+  "homepage": "https://rosabeltobar-hue.github.io/tbrea40",
   "browserslist": [
     ">0.2%",
     "not dead",

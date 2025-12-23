@@ -6,18 +6,8 @@ interface AvatarProps {
   coins: number;
 }
 
-// Get border color based on streak days
-const getStreakColor = (streakDays: number, relapse: boolean): string => {
-  if (relapse) return "#ff4d4d"; // Red for relapse
-  if (streakDays >= 90) return "#B9F2FF"; // Diamond (90+ days)
-  if (streakDays >= 30) return "#FFD700"; // Gold (30+ days)
-  if (streakDays >= 14) return "#C0C0C0"; // Silver (14+ days)
-  if (streakDays >= 7) return "#CD7F32"; // Bronze (7+ days)
-  return "#4CAF50"; // Green (starting)
-};
-
 export default function Avatar({ avatarType, relapse, streakDays, medals, coins }: AvatarProps) {
-  const border = getStreakColor(streakDays, relapse);
+  const border = relapse ? "#ff4d4d" : "#4CAF50";
 
   const medalEmoji = medals.includes("gold")
     ? "🥇"

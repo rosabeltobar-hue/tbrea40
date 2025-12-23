@@ -37,17 +37,6 @@ export interface User {
   avatarType: string;
   avatarBorderColor: string;
   avatarMedals: string[];
-  
-  // Chat profile (anonymous for privacy)
-  chatDisplayName?: string;
-  chatAvatar?: string;
-  chatAvatarCustom?: string; // Custom uploaded image URL
-  chatPolicyAccepted?: boolean; // User accepted chat policy (one-time)
-  disclaimerAccepted?: boolean; // User accepted app disclaimer (one-time, required)
-  
-  // Symptom tracking
-  symptomReports?: SymptomReport[];
-  
   // Optional notification preferences stored on the user document
   notifications?: NotificationPreferences;
   // FCM token for sending push notifications to this device
@@ -109,9 +98,6 @@ export interface NotificationPreferences {
 export interface ChatMessage {
   id: string;
   userId: string;
-  chatDisplayName: string; // Anonymous display name
-  chatAvatar: string; // Avatar emoji/icon
-  chatAvatarCustom?: string; // Custom uploaded image URL
   avatarType: string;
   message: string;
   createdAt: number;
@@ -128,20 +114,6 @@ export interface EvaResponse {
   createdAt: number;
 }
 
-// ================= SYMPTOM TRACKING ==================
-export interface SymptomReport {
-  day: number; // Day number in their break (1, 2, 3, etc.)
-  symptoms: string[]; // Array of symptom IDs
-  severity?: "mild" | "moderate" | "severe";
-  notes?: string;
-  timestamp: number;
-}
-
-export interface AggregatedSymptoms {
-  day: number;
-  symptomCounts: { [symptomId: string]: number };
-  totalReports: number;
-}
 
 // ================= PURCHASE ==================
 

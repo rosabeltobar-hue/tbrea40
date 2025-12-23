@@ -41,7 +41,7 @@ export default function App() {
   return (
     <OfflineProvider>
       <OfflineBanner />
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/tbrea40' : '/'}>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/checkin" element={<DailyCheckin />} />

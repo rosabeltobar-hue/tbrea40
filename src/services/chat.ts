@@ -6,63 +6,23 @@ import {
   serverTimestamp,
   query,
   orderBy,
-  onSnapshot,
-  getDocs,
-  deleteDoc,
-  doc,
-  limit
+  onSnapshot
 } from "firebase/firestore";
 import { ChatMessage } from "../types";
-import { queueOfflineChange, checkNetworkStatus } from "./offline";
 
 const COLLECTION = "chatMessages";
-const MAX_MESSAGES = 300;
-
-// Clean up old messages if over limit
-export const cleanupOldMessages = async () => {
-  try {
-    const q = query(
-      collection(db, COLLECTION),
-      orderBy("createdAt", "desc")
-    );
-    
-    const snapshot = await getDocs(q);
-    
-    if (snapshot.size > MAX_MESSAGES) {
-      const messagesToDelete = snapshot.size - MAX_MESSAGES;
-      const oldestMessages = snapshot.docs.slice(-messagesToDelete);
-      
-      console.log(`Cleaning up ${messagesToDelete} old messages...`);
-      
-      const deletePromises = oldestMessages.map(messageDoc => 
-        deleteDoc(doc(db, COLLECTION, messageDoc.id))
-      );
-      
-      await Promise.all(deletePromises);
-      console.log(`✅ Cleaned up ${messagesToDelete} old messages`);
-    }
-  } catch (error) {
-    console.error("Error cleaning up old messages:", error);
-  }
-};
 
 export const sendChatMessage = async (
   userId: string,
-  chatDisplayName: string,
-  chatAvatar: string,
   avatarType: string,
   text: string,
   streakDays: number,
   relapse: boolean,
   medals: string[],
-  coins: number = 0,
-  chatAvatarCustom?: string
+  coins: number
 ) => {
   const data: Omit<ChatMessage, "id" | "createdAt"> & { createdAt: any } = {
     userId,
-    chatDisplayName,
-    chatAvatar,
-    chatAvatarCustom,
     avatarType,
     message: text,
     streakDays,
@@ -72,29 +32,7 @@ export const sendChatMessage = async (
     createdAt: serverTimestamp()
   };
 
-  try {
-    await addDoc(collection(db, COLLECTION), data);
-    
-    // Cleanup old messages if over limit (fire and forget)
-    cleanupOldMessages().catch(err => 
-      console.warn("Cleanup failed:", err)
-    );
-  } catch (error) {
-    // If offline, queue the message for sending later
-    if (!checkNetworkStatus()) {
-      console.log("Offline: Queuing chat message for sync");
-      await queueOfflineChange(
-        `/chatMessages`,
-        "POST",
-        {
-          ...data,
-          createdAt: Date.now() // Use current timestamp for offline messages
-        }
-      );
-      return { success: true, queued: true };
-    }
-    throw error;
-  }
+  await addDoc(collection(db, COLLECTION), data);
 };
 
 export const subscribeToChatMessages = (
@@ -108,9 +46,6 @@ export const subscribeToChatMessages = (
       return {
         id: doc.id,
         userId: data.userId,
-        chatDisplayName: data.chatDisplayName || "Anonymous",
-        chatAvatar: data.chatAvatar || "smile",
-        chatAvatarCustom: data.chatAvatarCustom,
         avatarType: data.avatarType,
         message: data.message,
         streakDays: data.streakDays,
