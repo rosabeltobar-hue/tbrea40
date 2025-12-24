@@ -27,11 +27,16 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({
         navigator.serviceWorker.ready.then((registration) => {
           // Use any to access sync property (not yet in TypeScript definitions)
           const syncManager = (registration as any).sync;
-          if (syncManager) {
-            syncManager.register("sync-offline-data").catch((err: any) => {
-              console.log("Background sync registration failed (may be unsupported):", err);
-            });
+          if (syncManager && syncManager.register) {
+            const registerPromise = syncManager.register("sync-offline-data");
+            if (registerPromise && registerPromise.catch) {
+              registerPromise.catch((err: any) => {
+                console.log("Background sync registration failed (may be unsupported):", err);
+              });
+            }
           }
+        }).catch(() => {
+          // Service worker not ready, ignore
         });
       }
     };

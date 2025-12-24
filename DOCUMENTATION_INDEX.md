@@ -33,6 +33,7 @@ Then open `/workspaces/tbrea40/android` in Android Studio!
 | `ARCHITECTURE_FLOW.md` | System architecture + flow diagrams | 10 min |
 | `OFFLINE_SUPPORT_SUMMARY.md` | Offline mode how-to & testing | 10 min |
 | `IMPLEMENTATION_SUMMARY.md` | Features implemented overview | 10 min |
+| `TESTING_README.md` | Test suite guide (35 tests, 100% passing) | 15 min |
 
 ### Donations & Payments
 

@@ -1,0 +1,94 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: Check for TypeScript errors
+        id: typescript
+        run: npx tsc --noEmit
+        continue-on-error: true
+      
+      - name: Run tests
+        id: test
+        run: npm test -- --watchAll=false --passWithNoTests
+        env:
+          CI: true
+      
+      - name: Build check
+        id: build
+        run: npm run build
+      
+      - name: Comment PR with test results
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const output = `#### Test Results 🧪
+            - TypeScript: ${{ steps.typescript.outcome }}
+            - Tests: ${{ steps.test.outcome }}
+            - Build: ${{ steps.build.outcome }}
+            
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      
+      - name: Check for merge conflicts
+        run: |
+          if git grep -rn "<<<<<<< HEAD" -- ':!.github'; then
+            echo "Found merge conflict markers!"
+            exit 1
+          fi
+      
+      - name: Check file sizes
+        run: |
+          find src -type f -size +500k -exec ls -lh {} \; | awk '{print $9 ": " $5}'
+          if [ $(find src -type f -size +500k | wc -l) -gt 0 ]; then
+            echo "Warning: Large files detected"
+          fi
+      
+      - name: Check for console.log statements
+        run: |
+          if git diff origin/main...HEAD -- 'src/**/*.{ts,tsx,js,jsx}' | grep -E '^\+.*console\.(log|debug)'; then
+            echo "Warning: New console.log statements detected"
+            exit 0  # Warning only, don't fail
+          fi
+        continue-on-error: true

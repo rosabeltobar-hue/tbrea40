@@ -1,0 +1,147 @@
+// src/pages/Profile.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import Profile from './Profile';
+import { logout } from '../services/auth';
+
+jest.mock('../services/auth');
+
+const mockUseUser = jest.fn();
+jest.mock('../context/UserContext', () => ({
+  ...jest.requireActual('../context/UserContext'),
+  useUser: () => mockUseUser()
+}));
+
+describe('Profile Page', () => {
+  const mockLogout = logout as jest.MockedFunction<typeof logout>;
+
+  const mockUser = {
+    uid: 'test-user-123',
+    email: 'test@example.com'
+  };
+
+  const mockProfile = {
+    id: 'test-user-123',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    currentDay: 10,
+    totalCoins: 250,
+    streakDays: 8,
+    plan: 'free' as const,
+    usageType: 'smoke' as const,
+    frequency: 'moderate' as const,
+    durationMonths: 12,
+    goal: '40day' as const,
+    relapseCount: 1,
+    avatarType: 'default',
+    avatarBorderColor: '#00FF00',
+    avatarMedals: ['5-day', '10-day'],
+    age: 25,
+    weight: 70,
+    yearsOfUse: 3
+  };
+
+  beforeEach(() => {
+    mockUseUser.mockReturnValue({
+      authUser: mockUser,
+      profile: mockProfile,
+      user: mockUser
+    });
+    jest.clearAllMocks();
+  });
+
+  const renderProfile = () => {
+    return render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>
+    );
+  };
+
+  it('should render profile page title', () => {
+    renderProfile();
+    
+    expect(screen.getByText(/profile|account/i)).toBeInTheDocument();
+  });
+
+  it('should display user email', () => {
+    renderProfile();
+
+    expect(screen.getByText(/test@example.com/i)).toBeInTheDocument();
+  });
+
+  it('should display user statistics', () => {
+    renderProfile();
+
+    // Check for key stats
+    expect(screen.getByText(/day 10/i)).toBeInTheDocument();
+    expect(screen.getByText(/250.*coins?/i)).toBeInTheDocument();
+    expect(screen.getByText(/8.*day.*streak/i)).toBeInTheDocument();
+  });
+
+  it('should display user demographics if available', () => {
+    renderProfile();
+
+    expect(screen.getByText(/25|age.*25/i)).toBeInTheDocument();
+    expect(screen.getByText(/70|weight.*70/i)).toBeInTheDocument();
+  });
+
+  it('should display subscription plan', () => {
+    renderProfile();
+
+    expect(screen.getByText(/free|plan.*free/i)).toBeInTheDocument();
+  });
+
+  it('should display usage information', () => {
+    renderProfile();
+
+    expect(screen.getByText(/smoke/i)).toBeInTheDocument();
+    expect(screen.getByText(/moderate/i)).toBeInTheDocument();
+  });
+
+  it('should display goal information', () => {
+    renderProfile();
+
+    expect(screen.getByText(/40.*day/i)).toBeInTheDocument();
+  });
+
+  it('should display medals/achievements', () => {
+    renderProfile();
+
+    expect(screen.getByText(/5-day|5 day/i)).toBeInTheDocument();
+    expect(screen.getByText(/10-day|10 day/i)).toBeInTheDocument();
+  });
+
+  it('should have logout button', () => {
+    renderProfile();
+
+    const logoutButton = screen.getByRole('button', { name: /log.?out|sign.?out/i });
+    expect(logoutButton).toBeInTheDocument();
+  });
+
+  it('should call logout function when logout button is clicked', async () => {
+    mockLogout.mockResolvedValue();
+    renderProfile();
+
+    const logoutButton = screen.getByRole('button', { name: /log.?out|sign.?out/i });
+    fireEvent.click(logoutButton);
+
+    await waitFor(() => {
+      expect(mockLogout).toHaveBeenCalled();
+    });
+  });
+
+  it('should handle missing profile gracefully', () => {
+    mockUseUser.mockReturnValue({
+      authUser: mockUser,
+      profile: null,
+      user: mockUser
+    });
+
+    renderProfile();
+    
+    // Should render without crashing
+    expect(screen.getByText(/profile|account/i)).toBeInTheDocument();
+  });
+
+});

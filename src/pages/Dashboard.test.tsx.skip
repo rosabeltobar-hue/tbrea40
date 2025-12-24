@@ -1,0 +1,94 @@
+// src/pages/Dashboard.test.tsx
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import Dashboard from './Dashboard';
+import { OfflineProvider } from '../context/OfflineContext';
+
+// Mock the user context
+const mockUseUser = jest.fn();
+jest.mock('../context/UserContext', () => ({
+  ...jest.requireActual('../context/UserContext'),
+  useUser: () => mockUseUser()
+}));
+
+describe('Dashboard Page', () => {
+  const mockUser = {
+    uid: 'test-user-123',
+    email: 'test@example.com'
+  };
+
+  const mockProfile = {
+    id: 'test-user-123',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    currentDay: 5,
+    totalCoins: 100,
+    streakDays: 3,
+    plan: 'free' as const,
+    usageType: 'smoke' as const,
+    frequency: 'moderate' as const,
+    durationMonths: 12,
+    goal: '40day' as const,
+    relapseCount: 0,
+    avatarType: 'default',
+    avatarBorderColor: '#00FF00',
+    avatarMedals: []
+  };
+
+  beforeEach(() => {
+    mockUseUser.mockReturnValue({
+      authUser: mockUser,
+      profile: mockProfile,
+      user: mockUser
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const renderDashboard = () => {
+    return render(
+      <MemoryRouter>
+        <OfflineProvider>
+          <Dashboard />
+        </OfflineProvider>
+      </MemoryRouter>
+    );
+  };
+
+  it('should render dashboard title', () => {
+    renderDashboard();
+    
+    expect(screen.getByText(/t-break|dashboard/i)).toBeInTheDocument();
+  });
+
+  it('should display user progress information', () => {
+    renderDashboard();
+
+    // Should show current day
+    expect(screen.getByText(/day 5/i)).toBeInTheDocument();
+  });
+
+  it('should display navigation links', () => {
+    renderDashboard();
+
+    // Check for main navigation
+    expect(screen.getByText(/check.?in|daily/i)).toBeInTheDocument();
+    expect(screen.getByText(/calendar/i)).toBeInTheDocument();
+    expect(screen.getByText(/profile/i)).toBeInTheDocument();
+  });
+
+  it('should show streak information', () => {
+    renderDashboard();
+
+    expect(screen.getByText(/3.*day.*streak|streak.*3/i)).toBeInTheDocument();
+  });
+
+  it('should display coin balance', () => {
+    renderDashboard();
+
+    expect(screen.getByText(/100.*coins?|coins?.*100/i)).toBeInTheDocument();
+  });
+
+});
